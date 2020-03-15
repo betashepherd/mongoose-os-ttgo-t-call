@@ -6,8 +6,7 @@ load('api_sys.js');
 load('api_net.js');
 
 let led = Cfg.get('board.led1.pin');              // Built-in LED GPIO number
-let onhi = Cfg.get('board.led1.active_high');     // LED on when high?
-let state = {on: false};               // Device state
+let state = {};               // Device state
 
 //////////////////////////
 let gsmSwitchPin = 23;
@@ -28,19 +27,22 @@ Timer.set(1200, 0, function () {
 }, null);
 GPIO.write(gsmPwrKeyPin, 1);
 
-let setLED = function (on) {
-    let level = onhi ? on : !on;
-    GPIO.write(led, level);
-    print('LED on ->', on);
+let getInfo = function() {
+  return JSON.stringify({
+    total_ram: Sys.total_ram(),
+    free_ram: Sys.free_ram()
+  });
 };
 
+// Blink built-in LED every second
 GPIO.set_mode(led, GPIO.MODE_OUTPUT);
-setLED(state.on);
+Timer.set(1000 /* 1 sec */, Timer.REPEAT, function() {
+  let value = GPIO.toggle(led);
+  print(value ? 'Tick' : 'Tock', 'uptime:', Sys.uptime(), getInfo());
+}, null);
 
 // Update state every second, and report to cloud if online
-Timer.set(30000, Timer.REPEAT, function () {
-    state.uptime = Sys.uptime();
-    state.ram_free = Sys.free_ram();
+Timer.set(5000, Timer.REPEAT, function () {
     state.time = Timer.fmt("%F %T", Timer.now());
     print(JSON.stringify(state));
     MQTT.pub("/ttgo", JSON.stringify(state), 1);
