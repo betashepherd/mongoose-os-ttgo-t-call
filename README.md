@@ -1,2 +1,1 @@
-# mongoose-os-ttgo-t-call-mdash
-This Ripo have Mongoose OS firmware for TTGO T-Call also mDash Support
+Mongoose OS (2.17.0) firmware for TTGO T-Call

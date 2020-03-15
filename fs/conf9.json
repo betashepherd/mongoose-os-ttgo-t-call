@@ -1,0 +1,19 @@
+{
+  "mqtt": {
+    "enable": true,
+    "server": "iot.org:1883",
+    "user": "user",
+    "pass": "pass",
+    "reconnect_timeout_min": 1.000000,
+    "reconnect_timeout_max": 3.000000,
+    "keep_alive": 120
+  },
+  "provision": {
+    "max_state": 3
+  },
+  "sntp": {
+    "server": "cn.pool.ntp.org",
+    "retry_max": 5,
+    "update_interval": 600
+  }
+}
