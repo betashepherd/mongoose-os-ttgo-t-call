@@ -60,5 +60,26 @@ Event.addGroupHandler(Net.EVENT_GRP, function(ev, evdata, arg) {
   } else if (ev === Net.STATUS_GOT_IP) {
     evs = 'GOT_IP';
   }
-  print('== Net event:', ev, evs);
+  print('==== Net event:', ev, evs);
+}, null);
+
+//MQTT monitor
+MQTT.setEventHandler(function(conn, ev, edata) {
+  let evs = '???';
+  if (ev !== 0) {
+    if (ev === MQTT.EV_CONNACK) {
+      evs = 'CONNACK';
+    } else if (ev === MQTT.EV_PUBLISH) {
+      evs = 'PUBLISH';
+    } else if (ev === MQTT.EV_PUBACK) {
+      evs = 'PUBACK';
+    } else if (ev === MQTT.EV_SUBACK) {
+      evs = 'SUBACK';
+    } else if (ev === MQTT.EV_UNSUBACK) {
+      evs = 'UNSUBACK';
+    } else if (ev === MQTT.CLOSE) {
+      evs = 'CLOSE';
+    }
+  }
+  print('==== MQTT event:', evs, edata);
 }, null);
