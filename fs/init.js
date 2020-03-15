@@ -80,6 +80,6 @@ MQTT.setEventHandler(function(conn, ev, edata) {
     } else if (ev === MQTT.CLOSE) {
       evs = 'CLOSE';
     }
+    print('==== MQTT event:', evs);
   }
-  print('==== MQTT event:', evs, edata);
 }, null);
