@@ -6,7 +6,7 @@
     "pass": "pass",
     "reconnect_timeout_min": 1.000000,
     "reconnect_timeout_max": 3.000000,
-    "keep_alive": 120
+    "keep_alive": 15
   },
   "provision": {
     "max_state": 3

@@ -10,7 +10,7 @@ let led = Cfg.get('board.led1.pin');              // Built-in LED GPIO number
 let device_id = Cfg.get('device.id');
 let state = {};               // Device state
 let iccid = '';
-let sub_topic = '/' + device_id + '/init/sub';
+let sub_topic = '/' + device_id + '/sub';
 let pub_topic = '';
 
 //////////////////////////
@@ -47,7 +47,7 @@ Timer.set(1000 /* 1 sec */, Timer.REPEAT, function() {
   let value = GPIO.toggle(led);
   iccid = PPPOS.iccid();
   if (iccid !== '') {
-    pub_topic = '/' + device_id + '/' + iccid + '/pub';
+    pub_topic = '/' + device_id + '/' + iccid;
   }
   print(value ? 'Tick' : 'Tock', 'uptime:', Sys.uptime(), getInfo());
 }, null);
@@ -59,7 +59,7 @@ MQTT.sub(sub_topic, function(conn, topic, msg) {
 
 // Update state every second, and report to cloud if online
 Timer.set(5000, Timer.REPEAT, function () {
-    state.time = Timer.fmt("%F %T", Timer.now());
+    state.time = Timer.fmt("%F %T", Timer.now() + 28800);
     if (iccid !== '') {
       state.imei = PPPOS.imei();
       MQTT.pub(pub_topic, JSON.stringify(state), 1);
