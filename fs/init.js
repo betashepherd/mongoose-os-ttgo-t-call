@@ -47,6 +47,8 @@ Timer.set(1000 /* 1 sec */, Timer.REPEAT, function() {
 // Update state every second, and report to cloud if online
 Timer.set(5000, Timer.REPEAT, function () {
     state.time = Timer.fmt("%F %T", Timer.now());
+    state.imei = PPPOS.imei();
+    state.iccid = PPPOS.iccid();
     print(JSON.stringify(state));
     MQTT.pub("/ttgo", JSON.stringify(state), 1);
 }, null);
