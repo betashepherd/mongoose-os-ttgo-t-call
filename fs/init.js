@@ -2,6 +2,7 @@ load('api_config.js');
 load('api_gpio.js');
 load('api_mqtt.js');
 load('api_pppos.js');
+load('api_gps.js');
 load('api_timer.js');
 load('api_sys.js');
 load('api_net.js');
@@ -13,31 +14,13 @@ let iccid = '';
 let sub_topic = '/' + device_id + '/sub';
 let pub_topic = '';
 
-//////////////////////////
-let gsmSwitchPin = 23;
-let gsmPwrKeyPin = 4;
-/////////////////////////////////
-GPIO.set_mode(gsmSwitchPin, GPIO.MODE_OUTPUT);
-GPIO.set_mode(gsmPwrKeyPin, GPIO.MODE_OUTPUT);
-GPIO.write(gsmSwitchPin, 1); // Turn on gsm module
-GPIO.write(gsmPwrKeyPin, 1);
-
-Timer.set(1500, 0, function () {
-    // Wait for sometime
-}, null);
-
-// Turn Power Key pin low for 1200 ms to turn on the module
-Timer.set(1200, 0, function () {
-    GPIO.write(gsmPwrKeyPin, 0);
-}, null);
-GPIO.write(gsmPwrKeyPin, 1);
-
 let getInfo = function() {
   return JSON.stringify({
     total_ram: Sys.total_ram(),
     free_ram: Sys.free_ram(),
     iccid: PPPOS.iccid(),
-    imei: PPPOS.imei()
+    imei: PPPOS.imei(),
+    gps: GPS.getLocation()
   });
 };
 
