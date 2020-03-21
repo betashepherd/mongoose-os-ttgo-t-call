@@ -34,7 +34,7 @@ config_schema:
   - ["pppos.rx_gpio", "i", 26, {title: "RX pin; -1 = use default"}]
   - ["pppos.tx_gpio", "i", 27, {title: "TX pin; -1 = use default"}]
   - ["pppos.rts_gpio", "i", 5, {title: "RTS pin; -1 = use default"}]
-  - ["pppos.apn", "s", "cmnet", {title: "APN name"}]
+  - ["pppos.apn", "s", "CMNET", {title: "APN name"}]
 #  - ["pppos.user", "s", "ctnet@mycdma.cn", {title: "User name"}]
 #  - ["pppos.pass", "s", "vnet.mobi", {title: "Password"}]
 
