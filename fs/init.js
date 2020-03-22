@@ -8,10 +8,7 @@ load('api_net.js');
 
 let led = Cfg.get('board.led1.pin');              // Built-in LED GPIO number
 let device_id = Cfg.get('device.id');
-let state = {};               // Device state
-let iccid = '';
-let sub_topic = '/' + device_id + '/sub';
-let pub_topic = '';
+let topic = '';
 
 //////////////////////////
 let gsmSwitchPin = 23;
@@ -32,12 +29,13 @@ Timer.set(1200, 0, function () {
 }, null);
 GPIO.write(gsmPwrKeyPin, 1);
 
-let getInfo = function() {
+let pubData = function() {
   return JSON.stringify({
     total_ram: Sys.total_ram(),
     free_ram: Sys.free_ram(),
+    imei: PPPOS.imei(),
     iccid: PPPOS.iccid(),
-    imei: PPPOS.imei()
+    time: Timer.fmt("%F %T", Timer.now() + 28800)
   });
 };
 
@@ -45,26 +43,18 @@ let getInfo = function() {
 GPIO.set_mode(led, GPIO.MODE_OUTPUT);
 Timer.set(1000 /* 1 sec */, Timer.REPEAT, function() {
   let value = GPIO.toggle(led);
-  iccid = PPPOS.iccid();
-  if (iccid !== '') {
-    pub_topic = '/' + device_id + '/' + iccid;
+  if (topic === '' && PPPOS.iccid() !== '') {
+    topic = '/' + device_id + '/' + PPPOS.iccid();
   }
   print(value ? 'Tick' : 'Tock', 'uptime:', Sys.uptime(), getInfo());
 }, null);
 
-// MQTT init
-MQTT.sub(sub_topic, function(conn, topic, msg) {
-  print('Topic:', topic, 'message:', msg);
-}, null);
-
 // Update state every second, and report to cloud if online
 Timer.set(5000, Timer.REPEAT, function () {
-    state.time = Timer.fmt("%F %T", Timer.now() + 28800);
-    if (iccid !== '') {
-      state.imei = PPPOS.imei();
-      MQTT.pub(pub_topic, JSON.stringify(state), 1);
+    if (topic !== '') {
+      MQTT.pub(topic, pubData(), 1);
+      print("==== MQTT pub:", topic);
     }
-    print("==== MQTT pub:", pub_topic, JSON.stringify(state));
 }, null);
 
 // Monitor network connectivity.
