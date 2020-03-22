@@ -41,7 +41,7 @@ Timer.set(1000, Timer.REPEAT, function () {
 Timer.set(5000, Timer.REPEAT, function () {
   if (gtopic !== '') {
     MQTT.pub(gtopic, pubData(), 1);
-    print("==== MQTT pub:", topic);
+    print("==== MQTT pub:", gtopic);
   }
 }, null);
 
