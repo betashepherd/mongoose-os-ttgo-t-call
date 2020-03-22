@@ -46,7 +46,7 @@ Timer.set(1000 /* 1 sec */, Timer.REPEAT, function() {
   if (topic === '' && PPPOS.iccid() !== '') {
     topic = '/' + device_id + '/' + PPPOS.iccid();
   }
-  print(value ? 'Tick' : 'Tock', 'uptime:', Sys.uptime(), getInfo());
+  print(value ? 'Tick' : 'Tock', 'uptime:', Sys.uptime());
 }, null);
 
 // Update state every second, and report to cloud if online
