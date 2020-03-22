@@ -2,29 +2,38 @@ load('api_config.js');
 load('api_gpio.js');
 load('api_mqtt.js');
 load('api_gps.js');
+load('api_pppos.js');
 load('api_timer.js');
 load('api_sys.js');
 load('api_net.js');
 
 let led = Cfg.get('board.led1.pin');
-let topic = '/' + Cfg.get('device.id') + '/track'
+let topic = '';
 let pubData = function () {
   return JSON.stringify({
     total_ram: Sys.total_ram(),
     free_ram: Sys.free_ram(),
+    gps: GPS.getLocation(),
+    imei: PPPOS.imei(),
+    iccid: PPPOS.iccid(),
     time: Timer.fmt('%F %T', Timer.now() + 28800),
-    gps: GPS.getLocation()
   });
 };
 
 GPIO.set_mode(led, GPIO.MODE_OUTPUT);
 Timer.set(1000, Timer.REPEAT, function () {
   let value = GPIO.toggle(led);
+  if (PPPOS.iccid() !== '' && PPPOS.imei() !== '' && topic === '') {
+    topic = '/' + Cfg.get('device.id') + '/' + PPPOS.iccid() + '/' + PPPOS.imei() + '/tracker'
+  }
   print(value ? 'Tick' : 'Tock', Sys.uptime());
 }, null);
 
 Timer.set(5000, Timer.REPEAT, function () {
-  MQTT.pub(topic, pubData(), 1);
+  if (topic !== '') {
+    MQTT.pub(topic, pubData(), 1);
+    print('==== MQTT pub:', topic);
+  }
 }, null);
 
 Event.addGroupHandler(Net.EVENT_GRP, function (ev, evdata, arg) {
