@@ -7,51 +7,37 @@ load('api_timer.js');
 load('api_sys.js');
 load('api_net.js');
 
-let led = Cfg.get('board.led1.pin');              // Built-in LED GPIO number
-let device_id = Cfg.get('device.id');
-let state = {};               // Device state
+let led = Cfg.get('board.led1.pin');
+let state = {};
 let iccid = '';
-let sub_topic = '/' + device_id + '/sub';
 let pub_topic = '';
 
-let getInfo = function() {
+let getInfo = function () {
   return JSON.stringify({
     total_ram: Sys.total_ram(),
-    free_ram: Sys.free_ram(),
-    iccid: PPPOS.iccid(),
-    imei: PPPOS.imei(),
-    gps: GPS.getLocation()
+    free_ram: Sys.free_ram()
   });
 };
 
-// Blink built-in LED every second
 GPIO.set_mode(led, GPIO.MODE_OUTPUT);
-Timer.set(1000 /* 1 sec */, Timer.REPEAT, function() {
+Timer.set(1000, Timer.REPEAT, function () {
   let value = GPIO.toggle(led);
   iccid = PPPOS.iccid();
-  if (iccid !== '') {
-    pub_topic = '/' + device_id + '/' + iccid;
-  }
-  print(value ? 'Tick' : 'Tock', 'uptime:', Sys.uptime(), getInfo());
+  print(value ? 'Tick' : 'Tock', Sys.uptime());
 }, null);
 
-// MQTT init
-MQTT.sub(sub_topic, function(conn, topic, msg) {
-  print('Topic:', topic, 'message:', msg);
-}, null);
-
-// Update state every second, and report to cloud if online
 Timer.set(5000, Timer.REPEAT, function () {
+  if (iccid !== '') {
+    pub_topic = '/' + Cfg.get('device.id') + '/' + iccid;
     state.time = Timer.fmt("%F %T", Timer.now() + 28800);
-    if (iccid !== '') {
-      state.imei = PPPOS.imei();
-      MQTT.pub(pub_topic, JSON.stringify(state), 1);
-    }
+    state.imei = PPPOS.imei();
+    state.gps = GPS.getLocation();
+    MQTT.pub(pub_topic, JSON.stringify(state), 1);
     print("==== MQTT pub:", pub_topic, JSON.stringify(state));
+  }
 }, null);
 
-// Monitor network connectivity.
-Event.addGroupHandler(Net.EVENT_GRP, function(ev, evdata, arg) {
+Event.addGroupHandler(Net.EVENT_GRP, function (ev, evdata, arg) {
   let evs = '???';
   if (ev === Net.STATUS_DISCONNECTED) {
     evs = 'DISCONNECTED';
@@ -65,8 +51,7 @@ Event.addGroupHandler(Net.EVENT_GRP, function(ev, evdata, arg) {
   print('==== Net event:', ev, evs);
 }, null);
 
-//MQTT monitor
-MQTT.setEventHandler(function(conn, ev, edata) {
+MQTT.setEventHandler(function (conn, ev, edata) {
   let evs = '???';
   if (ev !== 0) {
     if (ev === MQTT.EV_CONNACK) {
