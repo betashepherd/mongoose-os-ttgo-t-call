@@ -9,7 +9,7 @@ load('api_net.js');
 
 let led = Cfg.get('board.led1.pin');
 let iccid = '';
-let pub_topic = '';
+let topic = '';
 
 let pubData = function () {
   return JSON.stringify({
@@ -27,15 +27,15 @@ Timer.set(1000, Timer.REPEAT, function () {
   let value = GPIO.toggle(led);
   if (iccid === '') {
     iccid = PPPOS.iccid();
-    pub_topic = '/' + Cfg.get('device.id') + '/' + iccid;
+    topic = '/' + Cfg.get('device.id') + '/' + iccid;
   }
   print(value ? 'Tick' : 'Tock', Sys.uptime());
 }, null);
 
 Timer.set(5000, Timer.REPEAT, function () {
   if (iccid !== '') {
-    MQTT.pub(pub_topic, pubData(), 1);
-    print("==== MQTT pub:", pub_topic);
+    MQTT.pub(topic, pubData(), 1);
+    print("==== MQTT pub:", topic);
   }
 }, null);
 
