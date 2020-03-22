@@ -10,6 +10,7 @@ load('api_net.js');
 let led = Cfg.get('board.led1.pin');
 let state = {};
 let iccid = '';
+let imei = '';
 let pub_topic = '';
 
 let getInfo = function () {
@@ -22,18 +23,22 @@ let getInfo = function () {
 GPIO.set_mode(led, GPIO.MODE_OUTPUT);
 Timer.set(1000, Timer.REPEAT, function () {
   let value = GPIO.toggle(led);
-  iccid = PPPOS.iccid();
+  if (iccid === '') {
+    iccid = PPPOS.iccid();
+    imei = PPPOS.imei();
+    pub_topic = '/' + Cfg.get('device.id') + '/' + iccid;
+  }
   print(value ? 'Tick' : 'Tock', Sys.uptime());
 }, null);
 
-Timer.set(5000, Timer.REPEAT, function () {
+Timer.set(10000, Timer.REPEAT, function () {
   if (iccid !== '') {
-    pub_topic = '/' + Cfg.get('device.id') + '/' + iccid;
     state.time = Timer.fmt("%F %T", Timer.now() + 28800);
-    state.imei = PPPOS.imei();
+    state.imei = imei;
     state.gps = GPS.getLocation();
     MQTT.pub(pub_topic, JSON.stringify(state), 1);
     print("==== MQTT pub:", pub_topic, JSON.stringify(state));
+    state = {};
   }
 }, null);
 
