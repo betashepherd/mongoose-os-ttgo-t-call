@@ -8,15 +8,17 @@ load('api_sys.js');
 load('api_net.js');
 
 let led = Cfg.get('board.led1.pin');
-let state = {};
 let iccid = '';
-let imei = '';
 let pub_topic = '';
 
-let getInfo = function () {
+let pubData = function () {
   return JSON.stringify({
     total_ram: Sys.total_ram(),
-    free_ram: Sys.free_ram()
+    free_ram: Sys.free_ram(),
+    time: Timer.fmt("%F %T", Timer.now() + 28800),
+    iccid: PPPOS.iccid(),
+    imei: PPPOS.imei(),
+    gps: GPS.getLocation()
   });
 };
 
@@ -25,20 +27,15 @@ Timer.set(1000, Timer.REPEAT, function () {
   let value = GPIO.toggle(led);
   if (iccid === '') {
     iccid = PPPOS.iccid();
-    imei = PPPOS.imei();
     pub_topic = '/' + Cfg.get('device.id') + '/' + iccid;
   }
   print(value ? 'Tick' : 'Tock', Sys.uptime());
 }, null);
 
-Timer.set(10000, Timer.REPEAT, function () {
+Timer.set(5000, Timer.REPEAT, function () {
   if (iccid !== '') {
-    state.time = Timer.fmt("%F %T", Timer.now() + 28800);
-    state.imei = imei;
-    state.gps = GPS.getLocation();
-    MQTT.pub(pub_topic, JSON.stringify(state), 1);
-    print("==== MQTT pub:", pub_topic, JSON.stringify(state));
-    state = {};
+    MQTT.pub(pub_topic, pubData(), 1);
+    print("==== MQTT pub:", pub_topic);
   }
 }, null);
 
