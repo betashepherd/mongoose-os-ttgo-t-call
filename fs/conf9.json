@@ -4,8 +4,8 @@
     "server": "iot.org:1883",
     "user": "user",
     "pass": "pass",
-    "reconnect_timeout_min": 1.000000,
-    "reconnect_timeout_max": 3.000000,
+    "reconnect_timeout_min": 3.000000,
+    "reconnect_timeout_max": 5.000000,
     "keep_alive": 15
   },
   "provision": {
@@ -13,7 +13,7 @@
   },
   "sntp": {
     "server": "cn.pool.ntp.org",
-    "retry_max": 5,
-    "update_interval": 600
+    "retry_max": 3,
+    "update_interval":3600
   }
 }
