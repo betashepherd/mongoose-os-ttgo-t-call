@@ -16,7 +16,7 @@ let pubData = function () {
     gps: GPS.getLocation(),
     imei: PPPOS.imei(),
     iccid: PPPOS.iccid(),
-    time: Timer.fmt('%F %T', Timer.now() + 28800),
+    time: Timer.fmt('%F %T', Timer.now() + 28800)
   });
 };
 
