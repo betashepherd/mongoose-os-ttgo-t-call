@@ -22,8 +22,6 @@ filesystem:
   - fs
 
 config_schema:
-  - ["app", "o", {title: "TTGO T-Call"}]
-  - ["app.update_interval", "i", 300, {title: "Update interval in seconds"}]
   - ["http.enable", "b", false, {title: "Enable HTTP Server"}]
   - ["wifi.sta.enable", false]
   - ["wifi.ap.enable", false]
@@ -55,8 +53,6 @@ libs:
   - origin: https://github.com/mongoose-os-libs/adc
   - origin: https://github.com/mongoose-os-libs/i2c
   - origin: https://github.com/mongoose-os-libs/wifi
-  - origin: https://github.com/ushijimamit/pppos
-  - origin: https://github.com/ushijimamit/gps
   - origin: https://github.com/mongoose-os-libs/mqtt
   - origin: https://github.com/mongoose-os-libs/dht
   - origin: https://github.com/mongoose-os-libs/arduino-adafruit-ssd1306
@@ -64,6 +60,8 @@ libs:
   - origin: https://github.com/mongoose-os-libs/sntp
   - origin: https://github.com/mongoose-os-libs/http-server
   - origin: https://github.com/mongoose-os-libs/wifi-setup-web-ui
+  - origin: https://github.com/betashepherd/pppos
+  - origin: https://github.com/betashepherd/gps
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
 manifest_version: 2017-09-29
