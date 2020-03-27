@@ -8,14 +8,16 @@ load('api_sys.js');
 load('api_net.js');
 
 let led = Cfg.get('board.led1.pin');
+let iccid = '';
+let imei = '';
 let topic = '';
 let pubData = function () {
   return JSON.stringify({
     total_ram: Sys.total_ram(),
     free_ram: Sys.free_ram(),
     gps: GPS.getLocation(),
-    imei: PPPOS.imei(),
-    iccid: PPPOS.iccid(),
+    imei: imei,
+    iccid: iccid,
     time: Timer.fmt('%F %T', Timer.now() + 28800)
   });
 };
@@ -23,8 +25,10 @@ let pubData = function () {
 GPIO.set_mode(led, GPIO.MODE_OUTPUT);
 Timer.set(1000, Timer.REPEAT, function () {
   let value = GPIO.toggle(led);
-  if (PPPOS.iccid() !== '' && PPPOS.imei() !== '' && topic === '') {
-    topic = '/' + Cfg.get('device.id') + '/' + PPPOS.iccid() + '/' + PPPOS.imei() + '/tracker'
+  if (topic === '' && PPPOS.iccid() !== '' && PPPOS.imei() !== '') {
+    imei = PPPOS.imei();
+    iccid = PPPOS.iccid();
+    topic = '/gps/tracker/' + Cfg.get('device.id') + '/' + iccid + '/' + imei;
   }
   print(value ? 'Tick' : 'Tock', Sys.uptime());
 }, null);
