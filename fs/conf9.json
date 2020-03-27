@@ -8,6 +8,11 @@
     "reconnect_timeout_max": 5.000000,
     "keep_alive": 15
   },
+  "wifi" : {
+    "sta" : {
+      "nameserver" : "223.6.6.6"
+    }
+  },
   "provision": {
     "max_state": 3
   },
